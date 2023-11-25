@@ -10,16 +10,19 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests((authorize) -> authorize
-                        // 認可の設定
-                        //上記以外のURLパスがきた場合は認証必須とする設定
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login(Customizer.withDefaults());
-        http.logout(logout -> logout.logoutSuccessUrl("/").permitAll());
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests((authorize) -> authorize
+                // 認可の設定
+                .requestMatchers("/hello").permitAll()
+				.requestMatchers("/login/oauth2", "/login/oauth2/authorization").permitAll()
+                .anyRequest().authenticated()
+        ).oauth2Login(oauth2 -> oauth2
+				.authorizationEndpoint(authorization -> authorization
+						.baseUri("/api/login/oauth2/authorization")
+				)
+        ).formLogin(Customizer.withDefaults());
         return http.build();
     }
 }
