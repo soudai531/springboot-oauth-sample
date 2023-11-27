@@ -1,6 +1,8 @@
 # springboot-oauth-sample
 SpringBootでのGitHubのOAuth2のクライアント実装サンプル
 
+OAuthで取得したアクセストークンなどがHttpSessionやSecurityContextHolderに格納される。
+
 主な依存関係
 ```
 implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // OAuth2 Client機能
@@ -9,7 +11,7 @@ implementation 'org.springframework.boot:spring-boot-starter-web' // Spring Web
 implementation 'org.springframework.security:spring-security-oauth2-jose'// OpenID Connect JWT用
 ```
 
-有名どころ(Google、GitHub、Facebookなど)ならclientidとclient-secretを設定するだけど良しなにやってくれるらしい
+有名どころ(Google、GitHub、Facebookなど)ならclientidとclient-secretを設定するだけど良しなにやってくれるらしい<br>
 https://spring.pleiades.io/spring-security/reference/servlet/oauth2/login/core.html#oauth2login-common-oauth2-provider
 <br>
 <br>
@@ -19,13 +21,17 @@ application.propertiesに以下を追加
 spring.security.oauth2.client.registration.github.client-id=
 spring.security.oauth2.client.registration.github.client-secret=
 ```
+<br>
+<br>
+Form認証(UsernamePasswordAuthenticationFileter)との併用もできるみたい。 
 
-Form認証(UsernamePasswordAuthenticationFileter)との併用もできるみたい。
-ただし、SecurityContextHolderに格納されるのはAuthenticationのサブクラスのOAuth2AuthenticationTokenクラスのため、それぞれの扱いに気を付ける。
+ただし、SecurityContextHolderに格納されるのはそれぞれ、AuthenticationのサブクラスのOAuth2AuthenticationToken、UsernamePasswordAuthenticationTokenになるので扱いには注意。
 
-# 検証
-複数の認証手段がある場合に、どういう動きをするのか。
+# 併用時のプチ検証
+複数の認証手段がある場合に、認証状態を保持したまま別の種類の認証を行うとどういう動作をするのか
 例：Form認証→ログアウトせずにOAuthでログインするなど
+仮説：複数のSecurityContextが保持される or SecurityContextが上書きされる
 
 検証結果
-複数のSecurityContextが保持されるわけではなく、最新の認証状態に上書きされるらしい。
+とりあえず、最新の認証状態が引っ張られる模様。
+最新ではない認証情報がそのまま保持されているかは不明。
