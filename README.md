@@ -27,10 +27,10 @@ Form認証(UsernamePasswordAuthenticationFileter)との併用もできるみた�
 ただし、SecurityContextHolderに格納されるのはそれぞれ、AuthenticationのサブクラスのOAuth2AuthenticationToken、UsernamePasswordAuthenticationTokenになるので扱いには注意。
 
 # 併用時のプチ検証
-複数の認証手段がある場合に、認証状態を保持したまま別の種類の認証を行うとどういう動作をするのか
+複数の認証方法がある場合に、認証状態を保持したまま別の種類の認証を行うとどういう動作をするのか
 例：Form認証→ログアウトせずにOAuthでログインするなど
-仮説：複数のSecurityContextが保持される or SecurityContextが上書きされる
 
-検証結果
+検証結果 
+
 とりあえず、最新の認証状態が引っ張られる模様。
 最新ではない認証情報がそのまま保持されているかは不明。
